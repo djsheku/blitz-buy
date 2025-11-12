@@ -22,6 +22,7 @@ const ProductDetail = () => {
         setLoading(true);
         const data = await api.getProduct(id!);
         setProduct(data);
+        console.log(product);
       } catch (error) {
         toast.error('Failed to load product');
         console.error(error);
@@ -77,7 +78,9 @@ const ProductDetail = () => {
   }
 
   const productName = product.title || product.name;
+  console.log(productName);
   const productImage = product.images?.[0] || product.image;
+  console.log(productImage.url);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -95,7 +98,7 @@ const ProductDetail = () => {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={productImage}
+                src={productImage.url}
                 alt={productName}
                 className="w-full h-full object-cover"
               />
