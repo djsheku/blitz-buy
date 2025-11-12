@@ -70,25 +70,41 @@ export const mockProducts = [
 export const api = {
   // Product API
   getProducts: async () => {
-    // TODO: Replace with actual API call to GET /api/product
-    return mockProducts;
+    const response = await fetch('http://localhost:8080/api/product');
+    if (!response.ok) throw new Error('Failed to fetch products');
+    return response.json();
   },
 
   getProduct: async (id: string) => {
-    // TODO: Replace with actual API call to GET /api/product/{id}
-    return mockProducts.find(p => p.id === id);
+    const response = await fetch(`http://localhost:8080/api/product/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch product');
+    return response.json();
   },
 
-  createProduct: async (product: any) => {
-    // TODO: Replace with actual API call to POST /api/product
-    console.log('Creating product:', product);
-    return product;
+  createProduct: async (formData: FormData) => {
+    const response = await fetch('http://localhost:8080/api/product', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Failed to create product');
+    return response.json();
   },
 
-  updateProduct: async (id: string, product: any) => {
-    // TODO: Replace with actual API call to PUT /api/product/{id}
-    console.log('Updating product:', id, product);
-    return product;
+  updateProduct: async (id: string, formData: FormData) => {
+    const response = await fetch(`http://localhost:8080/api/product/${id}`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Failed to update product');
+    return response.json();
+  },
+
+  deleteProduct: async (id: string) => {
+    const response = await fetch(`http://localhost:8080/api/product/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete product');
+    return response.json();
   },
 
   // Cart API

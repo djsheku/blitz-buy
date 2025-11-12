@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockProducts } from '@/lib/api';
+import { api } from '@/lib/api';
 import { useCart } from '@/contexts/CartContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -13,7 +13,51 @@ const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const product = mockProducts.find((p) => p.id === id);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await api.getProduct(id!);
+        setProduct(data);
+      } catch (error) {
+        toast.error('Failed to load product');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        name: product.title || product.name,
+        price: product.price,
+        image: product.images?.[0] || product.image,
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading product...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -32,16 +76,8 @@ const ProductDetail = () => {
     );
   }
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-      });
-    }
-  };
+  const productName = product.title || product.name;
+  const productImage = product.images?.[0] || product.image;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -59,17 +95,22 @@ const ProductDetail = () => {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={product.image}
-                alt={product.name}
+                src={productImage}
+                alt={productName}
                 className="w-full h-full object-cover"
               />
             </div>
 
             <div className="space-y-6">
               <div>
-                <Badge className="mb-2">{product.category}</Badge>
-                <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+                {product.category && <Badge className="mb-2">{product.category}</Badge>}
+                <h1 className="text-4xl font-bold mb-2">{productName}</h1>
                 <p className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</p>
+                {product.discount > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    {product.discount}% discount available
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
