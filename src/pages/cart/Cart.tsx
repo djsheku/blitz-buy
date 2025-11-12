@@ -18,7 +18,7 @@ const Cart = () => {
             <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground" />
             <h2 className="text-2xl font-bold">Your cart is empty</h2>
             <p className="text-muted-foreground">Add some products to get started!</p>
-            <Link to="/products">
+            <Link to="/store">
               <Button>Browse Products</Button>
             </Link>
           </div>
@@ -50,7 +50,7 @@ const Cart = () => {
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-lg font-bold text-primary mt-1">
-                          ${item.price.toFixed(2)}
+                          ₹{item.price.toFixed(2)}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
                           <Button
@@ -94,7 +94,7 @@ const Cart = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-semibold">${total.toFixed(2)}</span>
+                      <span className="font-semibold">₹{total.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Shipping</span>
@@ -102,7 +102,7 @@ const Cart = () => {
                     </div>
                     <div className="border-t pt-2 flex justify-between text-lg font-bold">
                       <span>Total</span>
-                      <span className="text-primary">${total.toFixed(2)}</span>
+                      <span className="text-primary">₹{total.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -112,7 +112,7 @@ const Cart = () => {
                     </Button>
                   </Link>
 
-                  <Link to="/products" className="block">
+                  <Link to="/store" className="block">
                     <Button variant="outline" className="w-full">
                       Continue Shopping
                     </Button>

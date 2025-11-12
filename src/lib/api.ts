@@ -109,39 +109,122 @@ export const api = {
 
   // Cart API
   getCart: async () => {
-    // TODO: Replace with actual API call to GET /api/cart
-    return [];
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8080/api/cart', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch cart');
+    return response.json();
   },
 
   addToCart: async (productId: string, quantity: number) => {
-    // TODO: Replace with actual API call to POST /api/cart
-    console.log('Adding to cart:', productId, quantity);
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8080/api/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId, itemCount: quantity }),
+    });
+    if (!response.ok) throw new Error('Failed to add to cart');
+    return response.json();
   },
 
-  updateCartItem: async (productId: string, quantity: number) => {
-    // TODO: Replace with actual API call to PUT /api/cart/{productId}
-    console.log('Updating cart item:', productId, quantity);
+  increaseCartItem: async (productId: string) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:8080/api/cart/increase/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to increase cart item');
+    return response.json();
+  },
+
+  decreaseCartItem: async (productId: string) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:8080/api/cart/decrease/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to decrease cart item');
+    return response.json();
   },
 
   removeFromCart: async (productId: string) => {
-    // TODO: Replace with actual API call to DELETE /api/cart/{productId}
-    console.log('Removing from cart:', productId);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:8080/api/cart/remove/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to remove from cart');
+    return response.json();
+  },
+
+  clearCart: async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8080/api/cart/remove', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to clear cart');
+    return response.json();
   },
 
   // Order API
   createOrder: async (orderData: any) => {
-    // TODO: Replace with actual API call to POST /api/order
-    console.log('Creating order:', orderData);
-    return { id: Date.now().toString(), ...orderData };
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8080/api/order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+    if (!response.ok) throw new Error('Failed to create order');
+    return response.json();
   },
 
   getOrders: async () => {
-    // TODO: Replace with actual API call to GET /api/order
-    return [];
+    const token = localStorage.getItem('token');
+    const response = await fetch('http://localhost:8080/api/order', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch orders');
+    return response.json();
   },
 
   getOrder: async (id: string) => {
-    // TODO: Replace with actual API call to GET /api/order/{id}
-    return null;
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:8080/api/order/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch order');
+    return response.json();
+  },
+
+  deleteOrder: async (id: string) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:8080/api/order/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to delete order');
+    return response.json();
   },
 };

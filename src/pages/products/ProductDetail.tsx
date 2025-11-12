@@ -67,8 +67,8 @@ const ProductDetail = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-            <Link to="/products">
-              <Button>Back to Products</Button>
+            <Link to="/store">
+              <Button>Back to Store</Button>
             </Link>
           </div>
         </div>
@@ -109,7 +109,7 @@ const ProductDetail = () => {
               <div>
                 {product.category && <Badge className="mb-2">{product.category}</Badge>}
                 <h1 className="text-4xl font-bold mb-2">{productName}</h1>
-                <p className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-primary">₹{product.price.toFixed(2)}</p>
                 {product.discount > 0 && (
                   <p className="text-sm text-muted-foreground">
                     {product.discount}% discount available

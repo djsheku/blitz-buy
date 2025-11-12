@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-2 font-bold text-lg">
               <Package className="h-5 w-5 text-primary" />
-              ShopHub
+              BlitzBuy
             </Link>
             <p className="text-sm text-muted-foreground">
               Your trusted online marketplace for quality products.
@@ -20,8 +20,8 @@ const Footer = () => {
             <h3 className="font-semibold mb-3">Shop</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/products" className="text-muted-foreground hover:text-foreground transition-colors">
-                  All Products
+                <Link to="/store" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Store
                 </Link>
               </li>
               <li>
@@ -66,7 +66,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ShopHub. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} BlitzBuy. All rights reserved.</p>
         </div>
       </div>
     </footer>

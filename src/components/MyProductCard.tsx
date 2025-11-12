@@ -48,7 +48,7 @@ const MyProductCard = ({ product, onEdit, onDelete }: MyProductCardProps) => {
       </div>
       <CardContent className="p-4">
         <h3 className="font-semibold line-clamp-2 mb-2">{productName}</h3>
-        <p className="text-2xl font-bold text-primary">${product.price.toFixed(2)}</p>
+        <p className="text-2xl font-bold text-primary">₹{product.price.toFixed(2)}</p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex gap-2">
         <Button onClick={handleEdit} variant="outline" className="flex-1" size="sm">

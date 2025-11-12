@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -6,28 +7,26 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-
-// Mock orders data
-const mockOrders = [
-  {
-    id: '1',
-    date: '2024-01-15',
-    total: 299.99,
-    status: 'delivered',
-    items: 3,
-  },
-  {
-    id: '2',
-    date: '2024-01-20',
-    total: 149.98,
-    status: 'shipped',
-    items: 2,
-  },
-];
+import { api } from '@/lib/api';
 
 const Orders = () => {
-  // TODO: Replace with actual API call to GET /api/order
-  const orders = mockOrders;
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      const data = await api.getOrders();
+      setOrders(data);
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -56,7 +55,7 @@ const Orders = () => {
                 <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
                 <h2 className="text-2xl font-bold mb-2">No orders yet</h2>
                 <p className="text-muted-foreground mb-4">Start shopping to see your orders here</p>
-                <Link to="/products">
+                <Link to="/store">
                   <Button>Browse Products</Button>
                 </Link>
               </div>
@@ -83,7 +82,7 @@ const Orders = () => {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-primary">
-                              ${order.total.toFixed(2)}
+                              ₹{order.totalPrice?.toFixed(2) || '0.00'}
                             </p>
                           </div>
                         </div>

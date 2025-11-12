@@ -20,7 +20,7 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-bold text-xl">
           <Package className="h-6 w-6 text-primary" />
-          ShopHub
+          BlitzBuy
         </Link>
 
         <div className="flex items-center gap-4">
