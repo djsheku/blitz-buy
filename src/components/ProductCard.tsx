@@ -23,7 +23,10 @@ interface ProductCardProps {
 const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
   const { addToCart } = useCart();
   const productName = product.title || product.name || '';
-  const productImage = product.images?.[0] || product.image;
+  const productImageObj = product.images?.[0] || product.image;
+  const productImage = typeof productImageObj === 'string' 
+    ? productImageObj 
+    : (productImageObj as any)?.url || '';
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -50,7 +53,7 @@ const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
       <Card className="overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer">
         <div className="aspect-square overflow-hidden bg-muted">
           <img
-            src={productImage.url}
+            src={productImage}
             alt={productName}
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />

@@ -78,9 +78,10 @@ const ProductDetail = () => {
   }
 
   const productName = product.title || product.name;
-  console.log(productName);
-  const productImage = product.images?.[0] || product.image;
-  console.log(productImage.url);
+  const productImageObj = product.images?.[0] || product.image;
+  const productImage = typeof productImageObj === 'string' 
+    ? productImageObj 
+    : (productImageObj as any)?.url || '';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -88,17 +89,17 @@ const ProductDetail = () => {
       
       <main className="flex-1">
         <div className="container py-8">
-          <Link to="/products">
+          <Link to="/store">
             <Button variant="ghost" className="mb-6">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Products
+              Back to Store
             </Button>
           </Link>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={productImage.url}
+                src={productImage}
                 alt={productName}
                 className="w-full h-full object-cover"
               />

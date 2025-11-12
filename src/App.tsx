@@ -8,7 +8,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ProductList from "./pages/products/ProductList";
+import Store from "./pages/products/Store";
+import MyProducts from "./pages/products/MyProducts";
 import ProductDetail from "./pages/products/ProductDetail";
 import ProductForm from "./pages/products/ProductForm";
 import Cart from "./pages/cart/Cart";
@@ -33,7 +34,8 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/products" element={<ProductList />} />
+              <Route path="/store" element={<Store />} />
+              <Route path="/my-products" element={<MyProducts />} />
               <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/admin/products/new" element={<ProductForm />} />
               <Route path="/cart" element={<Cart />} />

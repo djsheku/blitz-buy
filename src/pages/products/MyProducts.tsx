@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import ProductCard from '@/components/ProductCard';
+import MyProductCard from '@/components/MyProductCard';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import ProductFormDialog from '@/components/ProductFormDialog';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-const ProductList = () => {
+const MyProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -61,7 +61,7 @@ const ProductList = () => {
       <main className="flex-1">
         <div className="container py-8">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold">All Products</h1>
+            <h1 className="text-4xl font-bold">My Products</h1>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Product
@@ -76,7 +76,7 @@ const ProductList = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
-                  <ProductCard 
+                  <MyProductCard 
                     key={product.id} 
                     product={product}
                     onEdit={handleEdit}
@@ -107,4 +107,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default MyProducts;

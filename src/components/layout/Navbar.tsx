@@ -31,9 +31,17 @@ const Navbar = () => {
             </Button>
           </Link>
           
-          <Link to="/products">
+          <Link to="/store">
             <Button variant="ghost" size="sm">
-              Products
+              <Package className="h-4 w-4 mr-2" />
+              Store
+            </Button>
+          </Link>
+          
+          <Link to="/my-products">
+            <Button variant="ghost" size="sm">
+              <Package className="h-4 w-4 mr-2" />
+              My Products
             </Button>
           </Link>
 

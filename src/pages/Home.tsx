@@ -26,7 +26,7 @@ const Home = () => {
                 Shop the latest trends with unbeatable prices and fast shipping
               </p>
               <div className="flex gap-4 justify-center">
-                <Link to="/products">
+                <Link to="/store">
                   <Button size="lg" variant="secondary" className="gap-2">
                     Shop Now
                     <ArrowRight className="h-4 w-4" />
@@ -89,7 +89,7 @@ const Home = () => {
                 <h2 className="text-3xl font-bold tracking-tight">Featured Products</h2>
                 <p className="text-muted-foreground mt-2">Check out our handpicked selection</p>
               </div>
-              <Link to="/products">
+              <Link to="/store">
                 <Button variant="outline">
                   View All
                   <ArrowRight className="ml-2 h-4 w-4" />
