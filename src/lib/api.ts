@@ -119,19 +119,19 @@ export const api = {
     return response.json();
   },
 
-  addToCart: async (productId: string, quantity: number) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:8080/api/cart/add', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ productId, itemCount: quantity }),
-    });
-    if (!response.ok) throw new Error('Failed to add to cart');
-    return response.json();
-  },
+  addToCart: async (productId: string | number, quantity: number) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('http://localhost:8080/api/cart/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ productId: Number(productId), itemCount: Number(quantity) }),
+  });
+  if (!response.ok) throw new Error('Failed to add to cart');
+  return response.json();
+},
 
   increaseCartItem: async (productId: string) => {
     const token = localStorage.getItem('token');
@@ -227,4 +227,25 @@ export const api = {
     if (!response.ok) throw new Error('Failed to delete order');
     return response.json();
   },
+
+  // Inventory API
+adjustStock: async (id: string | number, delta: number) => {
+  const token = localStorage.getItem('token');
+  const path =
+    delta >= 0
+      ? `http://localhost:8080/api/inventory/add/${id}/${delta}`
+      : `http://localhost:8080/api/inventory/purchase/${id}/${Math.abs(delta)}`;
+
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) throw new Error('Failed to adjust stock');
+  return response.json();
+},
+
 };
+

@@ -1,13 +1,33 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { toast } from 'sonner';
+import { api } from '@/lib/api'; // make sure this exports adjustStock and optionally placeOrder
 
 const Cart = () => {
-  const { items, updateQuantity, removeFromCart, total } = useCart();
+  const navigate = useNavigate();
+  const { items, updateQuantity, removeFromCart, clearCart, total, loading } = useCart();
+
+  // while loading, avoid showing "Your cart is empty"
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground" />
+            <h2 className="text-2xl font-bold">Loading cart…</h2>
+            <p className="text-muted-foreground">Fetching items from your cart.</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -28,10 +48,57 @@ const Cart = () => {
     );
   }
 
+  // local handlers that sync inventory
+  const handleIncrease = async (item: any) => {
+    try {
+      // update cart
+      await updateQuantity(item.id, item.quantity + 1);
+      // decrement inventory by 1
+      await api.adjustStock(item.id, -1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to increase quantity');
+    }
+  };
+
+  const handleDecrease = async (item: any) => {
+    try {
+      // if next quantity would be zero, updateQuantity will remove the item
+      await updateQuantity(item.id, item.quantity - 1);
+      // increment inventory by 1
+      await api.adjustStock(item.id, 1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to decrease quantity');
+    }
+  };
+
+  const handleRemove = async (item: any) => {
+    try {
+      // remove from cart
+      await removeFromCart(item.id);
+      // return its quantity back to inventory
+      await api.adjustStock(item.id, Number(item.quantity));
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to remove item');
+    }
+  };
+
+  // Attempt to place order. If a placeOrder API exists, use it; otherwise fall back to adjusting stock and clearing cart.
+ const handlePlaceOrder = async () => {
+  try {
+    navigate('/checkout'); // just go to checkout page
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to proceed to checkout');
+  }
+};
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1">
         <div className="container py-8">
           <h1 className="text-4xl font-bold mb-8">Shopping Cart</h1>
@@ -57,7 +124,7 @@ const Cart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => handleDecrease(item)}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
@@ -66,7 +133,7 @@ const Cart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => handleIncrease(item)}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -74,7 +141,7 @@ const Cart = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 ml-auto text-destructive"
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => handleRemove(item)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -90,7 +157,7 @@ const Cart = () => {
               <Card className="sticky top-20">
                 <CardContent className="p-6 space-y-4">
                   <h2 className="text-xl font-bold">Order Summary</h2>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
@@ -106,11 +173,10 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  <Link to="/checkout" className="block">
-                    <Button className="w-full" size="lg">
-                      Proceed to Checkout
-                    </Button>
-                  </Link>
+                  {/* Proceed: attempt to place order then navigate */}
+                  <Button className="w-full" size="lg" onClick={handlePlaceOrder}>
+                    Proceed to Checkout
+                  </Button>
 
                   <Link to="/store" className="block">
                     <Button variant="outline" className="w-full">

@@ -22,7 +22,8 @@ const ProductDetail = () => {
         setLoading(true);
         const data = await api.getProduct(id!);
         setProduct(data);
-        console.log(product);
+        console.log("data = " + data);
+        console.log("product = " + product);
       } catch (error) {
         toast.error('Failed to load product');
         console.error(error);
@@ -36,17 +37,36 @@ const ProductDetail = () => {
     }
   }, [id]);
 
-  const handleAddToCart = () => {
-    if (!product) return;
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        id: product.id,
+  const handleAddToCart = async () => {
+  if (!product) return;
+
+  try {
+    // 1) add to cart in a single request
+    await addToCart(
+      {
+        id: String(product.id),
         name: product.title || product.name,
         price: product.price,
         image: product.images?.[0] || product.image,
-      });
-    }
-  };
+      },
+      quantity
+    );
+
+    // 2) decrease stock using inventory service
+    await api.adjustStock(product.id, -quantity);
+
+    // 3) optionally refresh product (to show new stock)
+    const refreshed = await api.getProduct(String(product.id));
+    setProduct(refreshed);
+
+    toast.success('Added to cart and stock updated');
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to add to cart / update stock');
+  }
+};
+
+
 
   if (loading) {
     return (
@@ -124,8 +144,8 @@ const ProductDetail = () => {
 
               <div className="space-y-2">
                 <h2 className="font-semibold">Availability</h2>
-                <Badge variant={product.stock > 0 ? 'default' : 'destructive'}>
-                  {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                <Badge variant={product.inStock > 0 ? 'default' : 'destructive'}>
+                  {product.inStock > 0 ? `${product.inStock} in stock` : 'Out of stock'}
                 </Badge>
               </div>
 
@@ -144,7 +164,7 @@ const ProductDetail = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      onClick={() => setQuantity(Math.min(product.inStock, quantity + 1))}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -153,7 +173,7 @@ const ProductDetail = () => {
 
                 <Button
                   onClick={handleAddToCart}
-                  disabled={product.stock === 0}
+                  disabled={product.inStock === 0}
                   className="w-full"
                   size="lg"
                 >

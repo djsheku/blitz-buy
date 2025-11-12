@@ -31,40 +31,49 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const loadCart = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      const cartData = await api.getCart();
-      if (cartData && cartData.cartItems) {
-        const mappedItems = cartData.cartItems.map((item: any) => ({
-          id: item.product.id.toString(),
-          name: item.product.title,
-          price: item.product.price,
-          quantity: item.itemCount,
-          image: item.product.images?.[0]?.url || item.product.images?.[0] || '',
-        }));
-        setItems(mappedItems);
-      }
-    } catch (error) {
-      console.error('Failed to load cart:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const token = localStorage.getItem('token');
+    if (!token) return setLoading(false);
 
-  const addToCart = async (product: Omit<CartItem, 'quantity'>) => {
-    try {
-      await api.addToCart(product.id, 1);
-      await loadCart();
-      toast.success('Added to cart');
-    } catch (error) {
-      toast.error('Failed to add to cart');
-      console.error(error);
-    }
-  };
+    console.log("started");
+
+    const res = await fetch('http://localhost:8080/api/cart', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch cart');
+    const data = await res.json();
+    console.log(data);
+
+    const mappedItems = (Array.isArray(data) ? data : []).map((item: any) => ({
+  id: item.id.toString(),
+  name: item.title,
+  price: item.price,
+  quantity: item.itemCount ?? 1,
+  image: item.images?.[0]?.url || item.images?.[0] || '',
+}));
+
+
+    console.log(mappedItems);
+
+    setItems(mappedItems);
+  } catch (err) {
+    console.error('Failed to load cart:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+  const addToCart = async (product: Omit<CartItem, 'quantity'>, quantity = 1) => {
+  try {
+    await api.addToCart(product.id, quantity);   // one request only
+    await loadCart();                            // refresh cart after success
+    toast.success('Added to cart');
+  } catch (error) {
+    toast.error('Failed to add to cart');
+    console.error(error);
+  }
+};
 
   const removeFromCart = async (productId: string) => {
     try {

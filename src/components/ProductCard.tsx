@@ -3,6 +3,8 @@ import { ShoppingCart, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
+import { api } from '@/lib/api';
 
 interface Product {
   id: string;
@@ -28,15 +30,29 @@ const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
     ? productImageObj 
     : (productImageObj as any)?.url || '';
   
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    addToCart({
-      id: product.id,
+  const handleAddToCart = async (e: React.MouseEvent) => {
+  e.preventDefault();
+  if (!product) return;
+
+  try {
+    // 1) Add a single item to cart
+    await addToCart({
+      id: String(product.id),
       name: productName,
       price: product.price,
       image: productImage,
-    });
-  };
+    }, 1); // explicitly send quantity = 1
+
+    // 2) Decrease stock by 1 in inventory service
+    await api.adjustStock(product.id, -1);
+
+    toast.success('Added to cart and stock updated');
+  } catch (error) {
+    console.error(error);
+    toast.error('Failed to add to cart / update stock');
+  }
+};
+
 
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
