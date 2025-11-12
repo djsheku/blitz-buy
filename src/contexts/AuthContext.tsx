@@ -30,32 +30,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Mock API call - replace with actual microservice call
-    // POST to /api/auth/login
-    const mockUser: User = {
+  try {
+    const res = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) throw new Error('Login failed');
+
+    const data = await res.json();
+    const token = data.token;
+
+    // Decode or store user info if returned
+    const user: User = {
       id: '1',
       email,
       name: email.split('@')[0],
       role: email.includes('admin') ? 'admin' : 'user',
     };
-    
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-  };
+
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('token', token);
+    setUser(user);
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
+
 
   const register = async (email: string, password: string, name: string) => {
-    // Mock API call - replace with actual microservice call
-    // POST to /api/auth/register
-    const mockUser: User = {
+  try {
+    const res = await fetch('http://localhost:8080/api/auth/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        confirmPassword: password,
+      }),
+    });
+    
+    if (!res.ok) throw new Error('Registration failed');
+
+    const data = await res.json();
+
+    const user: User = {
       id: Date.now().toString(),
       email,
       name,
       role: 'user',
     };
-    
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-  };
+
+    localStorage.setItem('user', JSON.stringify(user));
+    setUser(user);
+
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
+};
 
   const logout = () => {
     setUser(null);
