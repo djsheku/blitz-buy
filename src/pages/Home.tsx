@@ -1,14 +1,35 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Package, ShieldCheck, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ProductCard from '@/components/ProductCard';
-import { mockProducts } from '@/lib/api';
+import { api } from '@/lib/api';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { toast } from 'sonner';
 
 const Home = () => {
-  const featuredProducts = mockProducts.slice(0, 4);
+  const navigate = useNavigate();
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await api.getProducts();
+        const four = Array.isArray(data) ? data.slice(0, 4) : [];
+        setFeaturedProducts(four);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to load featured products');
+      }
+    };
+    fetchFeatured();
+  }, []);
+
+  const handleShopNow = () => {
+  navigate('/store');
+};
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -17,26 +38,27 @@ const Home = () => {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-hero-gradient text-primary-foreground">
-          <div className="container py-24 md:py-32">
-            <div className="mx-auto max-w-3xl text-center space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-                Discover Amazing Products
-              </h1>
-              <p className="text-lg md:text-xl text-primary-foreground/90">
-                Shop the latest trends with unbeatable prices and fast shipping
-              </p>
-              <div className="flex gap-4 justify-center">
-                <Link to="/store">
-                  <Button size="lg" variant="secondary" className="gap-2">
-                    Shop Now
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px]" />
-        </section>
+  <div className="container py-24 md:py-32">
+    <div className="mx-auto max-w-3xl text-center space-y-6">
+      <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+        Discover Amazing Products
+      </h1>
+      <p className="text-lg md:text-xl text-primary-foreground/90">
+        Shop the latest trends with unbeatable prices and fast shipping
+      </p>
+
+      <div className="flex gap-4 justify-center">
+        <Button size="lg" variant="secondary" className="gap-2" onClick={handleShopNow}>
+          Shop Now
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  {/* ✅ background still visible but no longer intercepts clicks */}
+  <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px] pointer-events-none" />
+</section>
 
         {/* Features */}
         <section className="py-16 bg-muted/30">
@@ -98,9 +120,11 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+  
+{featuredProducts.map(p => (
+  <ProductCard key={p.id} product={p} />
+))}
+
             </div>
           </div>
         </section>

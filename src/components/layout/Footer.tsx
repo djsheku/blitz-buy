@@ -7,10 +7,15 @@ const Footer = () => {
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-              <Package className="h-5 w-5 text-primary" />
-              BlitzBuy
-            </Link>
+              <Link
+  to="/"
+  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+  className="flex items-center gap-2 font-bold text-lg"
+>
+  <Package className="h-5 w-5 text-primary" />
+  BlitzBuy
+</Link>
+
             <p className="text-sm text-muted-foreground">
               Your trusted online marketplace for quality products.
             </p>
